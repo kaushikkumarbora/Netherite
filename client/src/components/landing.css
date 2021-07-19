@@ -1,0 +1,25 @@
+body{
+    background-color: #dee1e6;
+}
+
+.form-signin{
+    text-align: center;
+}
+
+.btn-primary{
+    background-color: #212529;
+    border-color: #212529;
+}
+
+.btn-primary:hover{
+    background-color:#393B4B;
+    border-color: #393B4B;
+}
+
+.nav-link:hover{
+    cursor: pointer;
+}
+
+.navbar-brand:hover{
+    cursor: pointer;
+}

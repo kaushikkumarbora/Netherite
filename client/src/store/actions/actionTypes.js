@@ -1,0 +1,5 @@
+export const actionTypes = {
+    ASSETS_LOADED: 'ASSETS_LOADED',
+    FILTERED_ASSETS: 'FILTERED_ASSETS',
+    ASSETS_UPDATED: 'ASSETS_UPDATED'
+  }

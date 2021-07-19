@@ -1,0 +1,25 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "create-models": "sequelize-auto -h localhost -d Asset_Monitoring -u postgres -x kaushik -p 5432  --dialect postgres -o .\\database\\models\\"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "sequelize-auto": "^0.8.3"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "moment": "^2.29.1",
+    "pg": "^8.6.0",
+    "sequelize": "^6.6.5",
+    "ws": "^7.5.3"
+  }
+}
