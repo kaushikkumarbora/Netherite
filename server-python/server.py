@@ -1,7 +1,19 @@
 # TODO Create flask app
 from flask import Flask, send_from_directory, escape
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__, static_folder='../client/build/static')
+socketio = SocketIO(logger=True)
+
+@socketio.on('connect')
+def ws_connect():
+    print('Connected user - {}'.format())
+    return
+
+@socketio.on('disconnect')
+def ws_disconnect():
+    print('Disconnected user - {}'.format())
+    return
 
 @app.route("/assets", methods=['GET'])
 def getAssets():
