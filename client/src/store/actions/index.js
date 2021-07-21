@@ -26,6 +26,12 @@ export const reformat = (assets) => {
     })
 }
 
+export const setupDone = () => ({
+    type: actionTypes.SETUP_DONE,
+    payload: {
+    }
+})
+
 export const filteredAssets = (subset) => ({
     type: actionTypes.FILTERED_ASSETS,
     payload: {
@@ -46,6 +52,22 @@ export const assetsUpdated = (assets) => ({
         assets
     }
 })
+
+export const sendCreds = (creds) => {
+    return (dispatch) => {
+        return fetch('/setup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(creds)
+        }).then(data => data.json()).then(respose => {
+            if (respose.status === '200') {
+                dispatch(setupDone());
+            }
+        })
+    }
+}
 
 export const fetchAssets = () => {
     return (dispatch) => {
