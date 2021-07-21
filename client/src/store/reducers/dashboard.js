@@ -1,6 +1,7 @@
 import { actionTypes } from "../actions/actionTypes";
 
 const initialState = {
+  setup: false,
   assets: [],
   subset: []
 };
@@ -28,6 +29,11 @@ const dashboardReducer = (state = initialState, action) => {
       const newState = { ...state };
       newState.assets = action.payload.assets;
       newState.subset = action.payload.assets;
+      return newState;
+    }
+    case actionTypes.SETUP_DONE: {
+      const newState = { ...state };
+      newState.setup = true;
       return newState;
     }
     default:

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Jumbotron, Table } from 'react-bootstrap';
 import { fetchAssets, filteredAssets, assetsUpdated } from '../../store/actions'
 import Search from '../../components/dashboard/search';
-import NavBarTop from '../../components/dashboard/navbar';
 import { Brief, SearchControls } from '../../components/dashboard/content';
 import { reformat } from '../../store/actions';
 
@@ -65,34 +64,30 @@ class AppShell extends React.Component {
     render() {
         return (
             <>
-                <header className='sb-nav-fixed'>
-                    <NavBarTop />
-                </header>
-                <section style={{ padding: '70px' }}>
-                    <Brief />
-                    <SearchControls RefreshCallback={this.Refresh} InputCallback={this.onInputChange} AdvSearch={this.advSearch} />
-                    <Jumbotron fluid>
-                        <Table striped bordered hover size="sm">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Asset_id</th>
-                                    <th>Hostname</th>
-                                    <th>IP</th>
-                                    <th>MAC</th>
-                                    <th>OS</th>
-                                    <th>Build</th>
-                                    <th>Workgroup</th>
-                                    <th>Domain</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <Search Assets={this.props.subset} />
-                            </tbody>
-                        </Table>
-                    </Jumbotron>
-                </section>
+
+                <Brief />
+                <SearchControls RefreshCallback={this.Refresh} InputCallback={this.onInputChange} AdvSearch={this.advSearch} />
+                <Jumbotron fluid>
+                    <Table striped bordered hover size="sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Asset_id</th>
+                                <th>Hostname</th>
+                                <th>IP</th>
+                                <th>MAC</th>
+                                <th>OS</th>
+                                <th>Build</th>
+                                <th>Workgroup</th>
+                                <th>Domain</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <Search Assets={this.props.subset} />
+                        </tbody>
+                    </Table>
+                </Jumbotron>
             </>
         );
     }

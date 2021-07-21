@@ -1,0 +1,44 @@
+.container-setup {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    gap: 3px 3px;
+    grid-auto-flow: row;
+    grid-template-areas: "pl_user" "user" "pl_server" "server" "pl_password" "password" "pl_target" "target" "buttons";
+}
+
+.pl_user {
+    grid-area: pl_user;
+}
+
+.user {
+    grid-area: user;
+}
+
+.pl_server {
+    grid-area: pl_server;
+}
+
+.server {
+    grid-area: server;
+}
+
+.pl_password {
+    grid-area: pl_password;
+}
+
+.password {
+    grid-area: password;
+}
+
+.pl_target {
+    grid-area: pl_target;
+}
+
+.target {
+    grid-area: target;
+}
+
+.buttons {
+    grid-area: buttons;
+}
