@@ -12,12 +12,13 @@ function Setup({ SetupCallback }) {
 
     const Setup = () => {
         var username = document.getElementById('user').value;
-        var server = document.getElementById('server').value;
+        var server = document.getElementById('server').value.split(':');
         var password = document.getElementById('password').value;
         var target = document.getElementById('target').value.split(',');
         SetupCallback({
             username: username,
-            server: server,
+            server: server[0],
+            port: (server[1]) ? server[1] : null,
             password: password,
             target: target
         })
