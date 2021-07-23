@@ -13,6 +13,7 @@ function Setup({ SetupCallback }) {
     const Setup = () => {
         var username = document.getElementById('user').value;
         var server = document.getElementById('server').value.split(':');
+        console.log(server);
         var password = document.getElementById('password').value;
         var target = document.getElementById('target').value.split(',');
         SetupCallback({
