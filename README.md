@@ -13,7 +13,7 @@ git clone https://github.com/kaushikkumarbora/D2C_Asset_Mon.git
 ### Install Dependencies
 #### Client (Frontend)
 ```bash
-cd .\D2C_Asset_Mon\server-js
+cd .\D2C_Asset_Mon\client
 npm i
 ```
 #### Server (Backend - Node.js)
