@@ -17,30 +17,42 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       unique: "asset_u_mac"
     },
+    workgroup_id: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      references: {
+        model: 'workgroup',
+        key: 'id'
+      }
+    },
+    domain_id: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+      references: {
+        model: 'domain',
+        key: 'id'
+      }
+    },
     ip: {
       type: "INET",
       allowNull: false,
       unique: "asset_u_ip"
     },
-    status: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true
+    os_id: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      references: {
+        model: 'operating_system',
+        key: 'id'
+      }
     },
-    os: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    domain: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    workgroup: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    os_ver: {
-      type: DataTypes.TEXT,
-      allowNull: true
+    latest_status: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      references: {
+        model: 'status',
+        key: 'id'
+      }
     }
   }, {
     sequelize,

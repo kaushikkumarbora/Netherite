@@ -209,7 +209,7 @@ ScanNReport = () => {
                     attributes: ['name']
                 },
                 {
-                    model: db.status, as: 'statuses',
+                    model: db.status, as: 'latest_status_status',
                     attributes: ['status']
                 }],
                 order: [['id', 'asc']]

@@ -22,8 +22,8 @@ class AppShell extends React.Component {
             this.props.assetsUpdated(reformat(data))
         });
 
-        client.addEventListener('error',(event) => {
-            alert('Error: The connection to ws://localhost:4001/ was interrupted while the page was loading.',event);
+        client.addEventListener('error', (event) => {
+            alert('Error: The connection to ws://localhost:4001/ was interrupted while the page was loading.', event);
             var temp = document.getElementById('websock-status')
             temp.classList.remove('alert-success');
             temp.classList.add('alert-danger');

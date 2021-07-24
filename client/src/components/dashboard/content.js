@@ -6,14 +6,13 @@ function Brief() {
         <Alert variant="success" id="websock-status">
             <Alert.Heading>Assets</Alert.Heading>
             <p>
-                Aww yeah, you successfully read this important alert message. This example
-                text is going to run a bit longer so that you can see how spacing within an
-                alert works with this kind of content.
+                In an increasingly mobile world, asset monitoringis an important activity. In cases such as asset
+                loss or even otherwise, appropriate asset monitoringis crucial in ensuring information security
+                at all times.
             </p>
             <hr />
             <p className="mb-0">
-                Whenever you need to, be sure to use margin utilities to keep things nice
-                and tidy.
+                This is a Proof of Concept. Improvements can be made.
             </p>
         </Alert>
     )

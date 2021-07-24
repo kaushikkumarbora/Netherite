@@ -30,6 +30,12 @@ function Setup({ SetupCallback }) {
             <Alert variant="success">
                 <Alert.Heading>Setup</Alert.Heading>
                 <p>
+                    In an increasingly mobile world, asset monitoringis an important activity. In cases such as asset
+                    loss or even otherwise, appropriate asset monitoringis crucial in ensuring information security
+                    at all times.
+                </p>
+                <hr />
+                <p className="mb-0">
                     Enter SSH Credentials and Network info.
                 </p>
             </Alert>

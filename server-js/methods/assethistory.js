@@ -10,7 +10,7 @@ getAssetHistory = (req, res) => {
         include: [
             {
                 model: db.status, as: 'statuses',
-                attributes: ['id','status','timestamp'],
+                attributes: ['id', 'status', 'timestamp'],
                 order: [['id', 'dsc']]
             }]
     }).then((assets) => res.status(200).json(assets));

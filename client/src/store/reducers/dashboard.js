@@ -13,9 +13,9 @@ const dashboardReducer = (state = initialState, action) => {
       newState.assets = action.payload.assets;
       var j = 0, lensub = newState.subset.length, lenasset = action.payload.assets.length;
       for (var i = 0; i < lenasset && j < lensub; i++) {
-        if(newState.subset[j].asset_id === action.payload.assets[i].asset_id){
+        if (newState.subset[j].asset_id === action.payload.assets[i].asset_id) {
           newState.subset[j] = action.payload.assets[i];
-          j = j+1;
+          j = j + 1;
         }
       }
       return newState;

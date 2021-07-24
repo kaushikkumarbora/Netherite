@@ -14,6 +14,14 @@ function initModels(sequelize) {
 
   status.belongsTo(asset, { as: "asset", foreignKey: "asset_id"});
   asset.hasMany(status, { as: "statuses", foreignKey: "asset_id"});
+  asset.belongsTo(domain, { as: "domain", foreignKey: "domain_id"});
+  domain.hasMany(asset, { as: "assets", foreignKey: "domain_id"});
+  asset.belongsTo(operating_system, { as: "o", foreignKey: "os_id"});
+  operating_system.hasMany(asset, { as: "assets", foreignKey: "os_id"});
+  asset.belongsTo(status, { as: "latest_status_status", foreignKey: "latest_status"});
+  status.hasMany(asset, { as: "assets", foreignKey: "latest_status"});
+  asset.belongsTo(workgroup, { as: "workgroup", foreignKey: "workgroup_id"});
+  workgroup.hasMany(asset, { as: "assets", foreignKey: "workgroup_id"});
 
   return {
     asset,

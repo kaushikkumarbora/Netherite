@@ -11,6 +11,7 @@ const concat = (jsonobj) => {
 
 export const reformat = (assets) => {
     return assets.map(asset => {
+        console.log(asset);
         return asset = {
             asset_id: asset.id,
             hostname: asset.hostname,
@@ -18,9 +19,9 @@ export const reformat = (assets) => {
             mac: asset.mac,
             os: asset.o.name,
             build: asset.o.build,
-            workgroup: (asset.workgroup) ? asset.workgroup.name : 'null',
-            domain: (asset.domain) ? asset.domain.name : 'null',
-            status: asset.status,
+            workgroup: asset.workgroup,
+            domain: asset.domain.name,
+            status: (asset.status)? 'Online':'Offline',
             summ: concat(asset)
         }
     })
