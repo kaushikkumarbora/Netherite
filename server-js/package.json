@@ -18,8 +18,10 @@
   "dependencies": {
     "express": "^4.17.1",
     "moment": "^2.29.1",
+    "netmask": "^2.0.2",
     "pg": "^8.6.0",
     "sequelize": "^6.6.5",
+    "ssh2": "^1.1.0",
     "ws": "^7.5.3"
   }
 }

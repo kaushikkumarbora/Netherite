@@ -3,7 +3,7 @@ import './advsearch.css'
 
 function Brief() {
     return (
-        <Alert variant="success">
+        <Alert variant="success" id="websock-status">
             <Alert.Heading>Assets</Alert.Heading>
             <p>
                 Aww yeah, you successfully read this important alert message. This example

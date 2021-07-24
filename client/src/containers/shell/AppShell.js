@@ -21,6 +21,13 @@ class AppShell extends React.Component {
             var data = JSON.parse(event.data);
             this.props.assetsUpdated(reformat(data))
         });
+
+        client.addEventListener('error',(event) => {
+            alert('Error: The connection to ws://localhost:4001/ was interrupted while the page was loading.',event);
+            var temp = document.getElementById('websock-status')
+            temp.classList.remove('alert-success');
+            temp.classList.add('alert-danger');
+        })
     }
 
     search(condition) {
