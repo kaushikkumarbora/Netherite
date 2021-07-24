@@ -4,14 +4,20 @@ const { Client } = require('ssh2');
 var Netmask = require('netmask').Netmask
 const util = require('util');
 const fs = require('fs');
+const { resolve } = require("path");
 
+//No. of cycles to do a complete scan(icmp + arp + DC Query)
+const Period = 5;
+//Other times only icmp
+const Interval = 30000;
 var setupDone = false;
 const conn = new Client();
 var setupConfig = null;
 var globalres;
 var commands = null;
-var ActiveHosts = null;
+var Hosts = null;
 var count = 0;
+var cycle = 0;
 
 function getMac(i, j) {
     return (ips, num) => new Promise((resolve, reject) => {
@@ -74,41 +80,22 @@ function pingSweep(index) {
     });
 }
 
-//Ready Event
-conn.on('ready', () => {
-    console.log('\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
+Wait = (time) => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, time);
+    })
+};
 
-    setupDone = true;
-
-    setupConfig.subnets = setupConfig.target.map((target) => {
-        try {
-            target = target.replace(/\s/g, '');
-            var subnet = new Netmask(target);
-            subnet.start_ip = subnet.first.split('.');
-            subnet.stop_ip = subnet.broadcast.split('.');
-            subnet.start_ip = subnet.start_ip.map((text) => Number(text));
-            subnet.stop_ip = subnet.stop_ip.map((text) => Number(text));
-            return subnet;
-        }
-        catch (err) {
-            console.log('error', err);
-        }
-        return;
-    });
-
-    console.log(setupConfig.subnets);
-
-    //Websocket Loop
-    setInterval(() => {
-        ActiveHosts = [];
-        count = 0;
+Scan = () => {
+    return new Promise((resolve) => {
         setupConfig.subnets.map(async function loop(subnet) {
+            count = 0;
             var i_max = subnet.stop_ip[0];
             var j_max = (subnet.start_ip[0] === subnet.stop_ip[0]) ? subnet.stop_ip[1] : 255;
             var k_max = (subnet.start_ip[1] === subnet.stop_ip[1]) ? subnet.stop_ip[2] : 255;
             for (var i = subnet.start_ip[0]; i <= i_max; i++) {
                 for (var j = subnet.start_ip[1]; j <= j_max; j++) {
-                    commands = [[],[],[]];
+                    commands = [[], [], []];
                     for (var k = subnet.start_ip[2]; k <= k_max; k++) {
 
                         if (i === subnet.stop_ip[0] && j === subnet.stop_ip[1] && k === subnet.stop_ip[2]) {
@@ -135,29 +122,75 @@ conn.on('ready', () => {
                             commands[count++][1] = k;
                         }
 
-                        console.log(commands[count - 1]);
+                        //console.log(commands[count - 1]);
 
                         if (count % 3 === 0 && count != 0) {
                             await Promise.all([pingSweep(count - 3),
                             pingSweep(count - 2),
-                            pingSweep(count - 1)]).then(async (ips) => { await getMac(i, j)(ips, 3).then(({ ips, macs }) => { console.log(macs) }) })
-
+                            pingSweep(count - 1)]).then(async (ips) => {
+                                if (cycle === 0) {
+                                    await getMac(i, j)(ips, 3).then(({ ips, macs }) => {
+                                        Hosts[0] = Hosts[0].concat(ips); Hosts[1] = Hosts[1].concat(macs)
+                                    })
+                                }
+                                else {
+                                    Hosts[0] = Hosts[0].concat(ips);
+                                }
+                            })
                             count = 0;
                         }
                         else if (i === i_max && j === j_max && k === k_max && count != 0) {
                             if (count == 2) {
                                 await Promise.all([pingSweep(count - 2),
-                                pingSweep(count - 1)]).then(async (ips) => { await getMac(i, j)(ips, 2).then(({ ips, macs }) => { console.log(macs) }) })
+                                pingSweep(count - 1)]).then(async (ips) => {
+                                    if (cycle === 0) {
+                                        await getMac(i, j)(ips, 2).then(({ ips, macs }) => {
+                                            Hosts[0] = Hosts[0].concat(ips); Hosts[1] = Hosts[1].concat(macs)
+                                        })
+                                    }
+                                    else {
+                                        Hosts[0] = Hosts[0].concat(ips);
+                                    }
+                                })
                             }
                             else {
-                                await Promise.all([pingSweep(count - 1)]).then(async (ips) => { await getMac(i, j)(ips, 1).then(({ ips, macs }) => { console.log(macs) }) })
+                                await Promise.all([pingSweep(count - 1)]).then(async (ips) => {
+                                    if (cycle === 0) {
+                                        await getMac(i, j)(ips, 1).then(({ ips, macs }) => {
+                                            Hosts[0] = Hosts[0].concat(ips); Hosts[1] = Hosts[1].concat(macs)
+                                        })
+                                    }
+                                    else {
+                                        Hosts[0] = Hosts[0].concat(ips);
+                                    }
+                                })
                             }
                         }
                         // console.log('next loop');
                     }
                 }
             }
+
+            if (cycle === 0) {
+                //Get Domain, Workgroup, OS
+
+            };
+
+            //Refactor Info and add to Hosts[]
+            console.log(Hosts);
+
+            //Update DB
+
+            resolve('');
         });
+    })
+};
+
+ScanNReport = () => {
+    return new Promise(async (resolve) => {
+        Hosts = [[], []];
+
+        await Scan();
 
         if (websocket.wss.clients) {
 
@@ -184,7 +217,46 @@ conn.on('ready', () => {
                 client.send(JSON.stringify(assets));
             }));
         }
-    }, 30000);
+
+        cycle = (cycle + 1) % Period;
+        resolve('');
+    })
+};
+
+
+WebSockLoop = async () => {
+    while (1) {
+        await ScanNReport();
+        await Wait(Interval);
+    }
+}
+
+//Ready Event
+conn.on('ready', () => {
+    console.log('\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
+
+    setupDone = true;
+
+    setupConfig.subnets = setupConfig.target.map((target) => {
+        try {
+            target = target.replace(/\s/g, '');
+            var subnet = new Netmask(target);
+            subnet.start_ip = subnet.first.split('.');
+            subnet.stop_ip = subnet.broadcast.split('.');
+            subnet.start_ip = subnet.start_ip.map((text) => Number(text));
+            subnet.stop_ip = subnet.stop_ip.map((text) => Number(text));
+            return subnet;
+        }
+        catch (err) {
+            console.log('error', err);
+        }
+        return;
+    });
+
+    console.log(setupConfig.subnets);
+
+    //Websocket Loop
+    WebSockLoop();
 
     if (globalres) {
         globalres.status('200').json({ status: '200' });
