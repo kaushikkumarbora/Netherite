@@ -38,6 +38,6 @@ app.get('/assets', method.getAssets);
 
 app.get('/asset/:assetID', method.getAssetHistory);
 
-app.post('/setup', method.setup);
+app.post('/setup', method.setup_win);
 
 app.listen(4000);

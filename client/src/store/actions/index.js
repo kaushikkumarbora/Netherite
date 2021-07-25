@@ -1,26 +1,25 @@
 import { actionTypes } from "./actionTypes";
 
 const concat = (jsonobj) => {
-    if (jsonobj.workgroup) {
-        return jsonobj.id + ' ' + jsonobj.hostname + ' ' + jsonobj.ip + ' ' + jsonobj.mac + ' ' + jsonobj.o.name + ' ' + jsonobj.o.build + ' ' + jsonobj.status + ' ' + jsonobj.workgroup.name;
+    if (jsonobj.workgroup != null) {
+        return jsonobj.id + ' ' + jsonobj.hostname + ' ' + jsonobj.ip + ' ' + jsonobj.mac + ' ' + jsonobj.os + ' ' + jsonobj.os_ver + ' ' + jsonobj.status + ' ' + jsonobj.workgroup;
     }
     else {
-        return jsonobj.id + ' ' + jsonobj.hostname + ' ' + jsonobj.ip + ' ' + jsonobj.mac + ' ' + jsonobj.o.name + ' ' + jsonobj.o.build + ' ' + jsonobj.status + ' ' + jsonobj.domain.name;
+        return jsonobj.id + ' ' + jsonobj.hostname + ' ' + jsonobj.ip + ' ' + jsonobj.mac + ' ' + jsonobj.os + ' ' + jsonobj.os_ver + ' ' + jsonobj.status + ' ' + jsonobj.domain;
     }
 }
 
 export const reformat = (assets) => {
     return assets.map(asset => {
-        console.log(asset);
         return asset = {
             asset_id: asset.id,
             hostname: asset.hostname,
             ip: asset.ip,
             mac: asset.mac,
-            os: asset.o.name,
-            build: asset.o.build,
+            os: asset.os,
+            build: asset.os_ver,
             workgroup: asset.workgroup,
-            domain: asset.domain.name,
+            domain: asset.domain,
             status: (asset.status)? 'Online':'Offline',
             summ: concat(asset)
         }
@@ -75,8 +74,9 @@ export const fetchAssets = () => {
         return fetch('/assets', {
             method: 'GET',
         }).then(data => data.json()).then(assets => {
-            console.log(assets)
-            return reformat(assets);
+            var temp = reformat(assets);
+            console.log('temp',temp);
+            return temp;
         }).then(assets => dispatch(assetsLoaded(assets)));
     }
 }

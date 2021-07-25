@@ -81,18 +81,27 @@ var cycle = 0;
 // }
 function GetADDetails() {
     return new Promise((resolve, reject) => {
-        conn.exec('$Computers = (Get-ADComputer -Filter {enabled -eq $true} -Property Name,CanonicalName,IPv4Address,OperatingSystem,OperatingSystemVersion);$result = ForEach ($Computer in $Computers){; If (Test-Connection -Quiet -Count 1 -Computer $Computer.Name){;  [PSCustomPbject]@{;ComputerName = $Computer.Name;CanonicalName = $Computer.CanonicalName;IPv4 = $Computer.IPv4Address;OperatingSystem = $Computer.OperatingSystem;OperatingSystemVersion = $Computer.OperatingSystemVersion;MAC = (Invoke-Command {;(Get-WmiObject Win32_NetworkAdapterConfiguration -Filter \'ipenabled = "true"\').MACAddress -Join \', \';} -ComputerName $Computer);Online = $True;DateTime = [DateTime]::Now;  }; } Else {;  [PSCustomPbject]@{;ComputerName = $Computer.Name;CanonicalName = $Computer.CanonicalName;IPv4 = $Computer.IPv4Address;OperatingSystem = $Computer.OperatingSystem;OperatingSystemVersion = $Computer.OperatingSystemVersion;MAC = \'\';Online = $False;DateTime = [DateTime]::Now;  }; };};$result | Export-Csv C:\\Users\\Administrator\\Desktop\\Computers.csv -Delimiter ";" -NoTypeInformation', (err, stream) => {
+        conn.exec('powershell $Computers = (Get-ADComputer -Filter {enabled -eq $true} -Property Name,CanonicalName,IPv4Address,OperatingSystem,OperatingSystemVersion); $result = ForEach ($Computer in $Computers){ If (Test-Connection -Quiet -Count 1 -Computer $Computer.Name){[PSCustomObject]@{ ComputerName = $Computer.Name; CanonicalName = $Computer.CanonicalName; IPv4 = $Computer.IPv4Address; OperatingSystem = $Computer.OperatingSystem; OperatingSystemVersion = $Computer.OperatingSystemVersion; MAC = (Invoke-Command { (Get-WmiObject Win32_NetworkAdapterConfiguration -Filter \'ipenabled = "true"\').MACAddress -Join \', \'} -ComputerName $Computer.Name); Online = $True; DateTime = [DateTime]::Now; Delim = \';\'; }} Else { [PSCustomPbject]@{ ComputerName = $Computer.Name; CanonicalName = $Computer.CanonicalName; IPv4 = $Computer.IPv4Address; OperatingSystem = $Computer.OperatingSystem; OperatingSystemVersion = $Computer.OperatingSystemVersion; MAC = \'\'; Online = $False; DateTime = [DateTime]::Now; Delim = \';\'; } }}; $result', (err, stream) => {
             if (err) throw err;
             var ips = '';
             stream.on('close', (code, signal) => {
                 console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-                Hosts = Hosts.split('\n');
+                var reg = /(\r\n\r\n)/gm;
+                Hosts[1] = ips.replace(reg, '').split('Delim                  : ;');
+                console.log(Hosts);
+                Hosts[1] = Hosts[1].map((Host) => {
+                    return Host.split('\r\n').map((key_val) => {
+                        if (key_val != '') return key_val.split(' : ')[1];
+                        else return;
+                    });
+                })
+                console.log(Hosts);
                 resolve('');
             });
 
             stream.on('data', (data) => {
                 // console.log('STDOUT');
-                ips = ips + data;
+                ips = ips.concat(data.toString());
             });
 
             stream.stderr.on('data', (data) => {
@@ -210,38 +219,47 @@ Wait = (time) => {
 
 ScanNReport = () => {
     return new Promise(async (resolve) => {
-        Hosts = [];
+        Hosts = [[], []];
 
         //await Scan();
         await GetADDetails();
 
         //TODO---
-        Hosts.map((Host) => {
-            db.asset.findOne({
-                where: {
-                    ip: Host[2]
-                }
-            }).then((asset) => {
-                if (asset) {
-                    if (asset.status != Host[6]) {
-                        //Edit entry
-                        //TODO then compare the present asset and details and update record if necessary
-                    }
-                    //TODO else if same update details
-                }
-                else{
-                    db.asset.create({
-                        hostname: Host[0],
-                        domain: Host[1].split(',')[0],
-                        ip: Host[2],
-                        os: Host[3],
-                        os_ver: Host[4],
-                        mac: Host[5],
-                        status: Host[6]
+        await Promise.all(Hosts[1].map((Host) => {
+            return new Promise((resolve, reject) => {
+                if (Host[2] != undefined) {
+                    console.log(Host[2]);
+                    db.asset.findOne({
+                        where: {
+                            ip: Host[2]
+                        }
+                    }).then((asset) => {
+                        if (asset) {
+                            if (asset.status != Host[6]) {
+                                //Edit entry
+                                asset.update({
+                                    status: Host[6]
+                                })
+                                //TODO then compare the present asset and details and update record if necessary
+                            }
+                            //TODO else if same update details
+                        }
+                        else {
+                            db.asset.create({
+                                hostname: Host[0],
+                                domain: Host[1].split('/')[0],
+                                ip: Host[2],
+                                os: Host[3],
+                                os_ver: Host[4],
+                                mac: Host[5],
+                                status: Host[6]
+                            }).then(() => resolve());
+                        }
                     })
                 }
+                resolve();
             })
-        })
+        }));
         //TODO---
         if (websocket.wss.clients) {
 
@@ -267,7 +285,7 @@ WebSockLoop = async () => {
 }
 
 //Ready Event
-conn.on('ready', () => {
+conn.on('ready', async () => {
     console.log('\r\n*** SSH CONNECTION ESTABLISHED ***\r\n');
 
     setupDone = true;
