@@ -1,6 +1,12 @@
-# D2C Asset Monitoring
+<div align="center" class="row">
+  <img src="https://i.imgur.com/94ryGD9.png" width="200"/>
+</div>
+<h3 align="center">Discover Your Network</h3>
+<br>
 
-Proof of Concept for Asset Monitoring tool.
+## Problem Statement
+
+In an increasingly mobile world, asset monitoring is an important activity. In cases such as asset loss or even otherwise, appropriate asset monitoring is crucial in ensuring information security at all times. As part of this challenge, teams are expected to build a tool that will be able to monitor assets and be able to tell users all key information pertaining to the same.
 
 ## Installation
 
@@ -8,22 +14,22 @@ Use the package manager [npm](https://nodejs.org/en/download/) to install depend
 
 ### Download Repository
 ```bash
-git clone https://github.com/kaushikkumarbora/D2C_Asset_Mon.git
+git clone https://github.com/kaushikkumarbora/Netherite.git
 ```
 ### Install Dependencies
 #### Client (Frontend)
 ```bash
-cd .\D2C_Asset_Mon\client
+cd .\Netherite\client
 npm i
 ```
 #### Server (Backend - Node.js)
 ```bash
-cd .\D2C_Asset_Mon\server-js
+cd .\Netherite\server-js
 npm i
 ```
 #### Server (Backend - Python) - Optional
 ```bash
-cd .\D2C_Asset_Mon\server-python
+cd .\Netherite\server-python
 pip install requirements.txt
 ```
 #### Install PostgreSQL
@@ -86,21 +92,17 @@ After you have done the first time setup, you can run the application directly f
 cd .\server-js
 npm start
 ```
+## Screenshots
+<div align="center">
+<img src="https://i.imgur.com/xdFROEn.png" width="440" align="center"/>
+</div>
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+## Authors
 
-Please make sure to update tests as appropriate.
+##### [Kaushik Kumar Bora](https://github.com/kaushikkumarbora)
+##### [Rabijit Singh](https://github.com/rabijitsingh)
+##### [Subhasish Goswami](https://github.com/subhasishgoswami)
 
-### Branches
-#### main
-> Main branch. May not be the updated branch
-#### server-python
-> Implement backend with Flask API
-#### panic
-> Windows AD Querying for information such as OS,OS version, Hostname, Canonical Name ... (Require a shell from AD as administrator)
-#### Panic-js
-> Dumping Host Discovery into a single table database (Bad Practice). Used for testing.
 
 ## Credits
 > Discord-
