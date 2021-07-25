@@ -196,22 +196,6 @@ ScanNReport = () => {
 
             //DB Query
             db.asset.findAll({
-                include: [{
-                    model: db.operating_system, as: 'o',
-                    attributes: ['name', 'build']
-                },
-                {
-                    model: db.workgroup, as: 'workgroup',
-                    attributes: ['name']
-                },
-                {
-                    model: db.domain, as: 'domain',
-                    attributes: ['name']
-                },
-                {
-                    model: db.status, as: 'latest_status_status',
-                    attributes: ['status']
-                }],
                 order: [['id', 'asc']]
             }).then((assets) => websocket.wss.clients.forEach(function (client) {
                 client.send(JSON.stringify(assets));
