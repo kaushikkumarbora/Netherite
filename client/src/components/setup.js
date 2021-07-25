@@ -16,12 +16,14 @@ function Setup({ SetupCallback }) {
         console.log(server);
         var password = document.getElementById('password').value;
         var target = document.getElementById('target').value.split(',');
+        var scope = document.getElementById('scope').checked;
         SetupCallback({
             username: username,
             server: server[0],
             port: (server[1]) ? server[1] : null,
             password: password,
-            target: target
+            target: target,
+            remote: scope
         })
     }
 
@@ -40,6 +42,7 @@ function Setup({ SetupCallback }) {
                         <Form.Text className="pl_server">Server: </Form.Text><Form.Control type="text" className="server to-clear-custom" id="server" placeholder="SSH Server" />
                         <Form.Text className="pl_password">Password: </Form.Text><Form.Control type="password" className="password to-clear-custom" id="password" placeholder="Password" />
                         <Form.Text className="pl_target">Target: </Form.Text><Form.Control type="text" className="target to-clear-custom" id="target" placeholder="Target subnet/host" />
+                        <div className="div_scope"><Form.Text className="pl_remote">Remote: </Form.Text><Form.Check type="checkbox" id="scope" /></div>
                         <div className="buttons">
                             <div className="setupbutton">
                                 <Button onClick={Setup}>

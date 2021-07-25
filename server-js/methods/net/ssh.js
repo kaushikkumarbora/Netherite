@@ -5,6 +5,7 @@ var Netmask = require('netmask').Netmask
 const util = require('util');
 const fs = require('fs');
 const { resolve } = require("path");
+const { exec } = require('child_process');
 
 //No. of cycles to do a complete scan(icmp + arp + DC Query)
 const Period = 5;
@@ -19,7 +20,7 @@ var Hosts = null;
 var count = 0;
 var cycle = 0;
 
-function getMac(i, j) {
+function getMac(i, j, mode) {
     return (ips, num) => new Promise((resolve, reject) => {
         var arpCache;
 
@@ -34,49 +35,81 @@ function getMac(i, j) {
 
         else if (num === 1) arpCache = util.format("arp -n | grep '%s' | sed 's/|/ /' | awk '$3 ~ /^[a-f0-9][a-f0-9]:[a-f0-9][a-f0-9]:[a-f0-9][a-f0-9]:[a-f0-9][a-f0-9]:[a-f0-9][a-f0-9]:[a-f0-9][a-f0-9]/ {print $1, $3}' | sort -V",
             '' + i + '.' + j + '.' + commands[0][1]);
-        //SSH Command
-        conn.exec(arpCache, (err, stream) => {
-            if (err) throw err;
-            var macs = ''
-            stream.on('close', (code, signal) => {
-                console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-                macs = macs.split('\n');
-                macs = macs.map((ip_mac) => ip_mac.split(' '));
-                resolve({ ips, macs });
-            });
 
-            stream.on('data', (data) => {
-                // console.log('STDOUT: ');
-                macs = macs + data;
-            });
+        if (mode) {
+            //SSH Command
+            conn.exec(arpCache, (err, stream) => {
+                if (err) throw err;
+                var macs = ''
+                stream.on('close', (code, signal) => {
+                    console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+                    macs = macs.split('\n');
+                    macs = macs.map((ip_mac) => ip_mac.split(' '));
+                    resolve({ ips, macs });
+                });
 
-            stream.stderr.on('data', (data) => {
-                console.log('STDERR: ' + data);
+                stream.on('data', (data) => {
+                    // console.log('STDOUT: ');
+                    macs = macs + data;
+                });
+
+                stream.stderr.on('data', (data) => {
+                    console.log('STDERR: ' + data);
+                });
             });
-        });
+        }
+        else {
+            console.log('exec - ', commands[index][0]);
+            exec(commands[index][0], (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`exec error: ${error}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+                console.error(`stderr: ${stderr}`);
+                stdout = stdout.split('\n');
+                stdout = stdout.map((ip_mac) => ip_mac.split(' '));
+                resolve(stdout);
+            })
+        }
     });
 }
 
-function pingSweep(index) {
+function pingSweep(index, mode) {
     return new Promise((resolve, reject) => {
-        conn.exec(commands[index][0], (err, stream) => {
-            if (err) throw err;
-            var ips = '';
-            stream.on('close', (code, signal) => {
-                console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-                ips = ips.split(':\n');
-                resolve(ips);
-            });
+        if (mode) {
+            conn.exec(commands[index][0], (err, stream) => {
+                if (err) throw err;
+                var ips = '';
+                stream.on('close', (code, signal) => {
+                    console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+                    ips = ips.split(':\n');
+                    resolve(ips);
+                });
 
-            stream.on('data', (data) => {
-                // console.log('STDOUT');
-                ips = ips + data;
-            });
+                stream.on('data', (data) => {
+                    // console.log('STDOUT');
+                    ips = ips + data;
+                });
 
-            stream.stderr.on('data', (data) => {
-                console.log('STDERR: ' + data);
+                stream.stderr.on('data', (data) => {
+                    console.log('STDERR: ' + data);
+                });
             });
-        });
+        }
+        else {
+            console.log('exec - ', commands[index][0]);
+            exec(commands[index][0], (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`exec error: ${error}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+                console.error(`stderr: ${stderr}`);
+                stdout = stdout.split(':\n');
+                resolve(stdout);
+            })
+        }
     });
 }
 
@@ -86,7 +119,7 @@ Wait = (time) => {
     })
 };
 
-Scan = () => {
+Scan = (mode) => {
     return new Promise((resolve) => {
         setupConfig.subnets.map(async function loop(subnet) {
             count = 0;
@@ -125,26 +158,14 @@ Scan = () => {
                         //console.log(commands[count - 1]);
 
                         if (count % 3 === 0 && count != 0) {
-                            await Promise.all([pingSweep(count - 3),
-                            pingSweep(count - 2),
-                            pingSweep(count - 1)]).then(async (ips) => {
-                                if (cycle === 0) {
-                                    await getMac(i, j)(ips, 3).then(({ ips, macs }) => {
-                                        Hosts[0] = Hosts[0].concat(ips); Hosts[1] = Hosts[1].concat(macs)
-                                    })
-                                }
-                                else {
-                                    Hosts[0] = Hosts[0].concat(ips);
-                                }
-                            })
-                            count = 0;
-                        }
-                        else if (i === i_max && j === j_max && k === k_max && count != 0) {
-                            if (count == 2) {
-                                await Promise.all([pingSweep(count - 2),
-                                pingSweep(count - 1)]).then(async (ips) => {
+                            await Promise.all(
+                                [
+                                    pingSweep(count - 3, mode),
+                                    pingSweep(count - 2, mode),
+                                    pingSweep(count - 1, mode)
+                                ]).then(async (ips) => {
                                     if (cycle === 0) {
-                                        await getMac(i, j)(ips, 2).then(({ ips, macs }) => {
+                                        await getMac(i, j, mode)(ips, 3).then(({ ips, macs }) => {
                                             Hosts[0] = Hosts[0].concat(ips); Hosts[1] = Hosts[1].concat(macs)
                                         })
                                     }
@@ -152,11 +173,29 @@ Scan = () => {
                                         Hosts[0] = Hosts[0].concat(ips);
                                     }
                                 })
+                            count = 0;
+                        }
+                        else if (i === i_max && j === j_max && k === k_max && count != 0) {
+                            if (count == 2) {
+                                await Promise.all(
+                                    [
+                                        pingSweep(count - 2, mode),
+                                        pingSweep(count - 1, mode)
+                                    ]).then(async (ips) => {
+                                        if (cycle === 0) {
+                                            await getMac(i, j, mode)(ips, 2).then(({ ips, macs }) => {
+                                                Hosts[0] = Hosts[0].concat(ips); Hosts[1] = Hosts[1].concat(macs)
+                                            })
+                                        }
+                                        else {
+                                            Hosts[0] = Hosts[0].concat(ips);
+                                        }
+                                    })
                             }
                             else {
-                                await Promise.all([pingSweep(count - 1)]).then(async (ips) => {
+                                await Promise.all([pingSweep(count - 1, mode)]).then(async (ips) => {
                                     if (cycle === 0) {
-                                        await getMac(i, j)(ips, 1).then(({ ips, macs }) => {
+                                        await getMac(i, j, mode)(ips, 1).then(({ ips, macs }) => {
                                             Hosts[0] = Hosts[0].concat(ips); Hosts[1] = Hosts[1].concat(macs)
                                         })
                                     }
@@ -186,11 +225,11 @@ Scan = () => {
     })
 };
 
-ScanNReport = () => {
+ScanNReport = (mode) => {
     return new Promise(async (resolve) => {
         Hosts = [[], []];
 
-        await Scan();
+        await Scan(mode);
 
         if (websocket.wss.clients) {
 
@@ -223,12 +262,37 @@ ScanNReport = () => {
     })
 };
 
-
-WebSockLoop = async () => {
+WebSockLoop = async (mode) => {
     while (1) {
-        await ScanNReport();
+        await ScanNReport(mode);
         await Wait(Interval);
     }
+}
+
+localConnect = (setupConfig, res) => {
+    setupDone = true;
+
+    setupConfig.subnets = setupConfig.target.map((target) => {
+        try {
+            target = target.replace(/\s/g, '');
+            var subnet = new Netmask(target);
+            subnet.start_ip = subnet.first.split('.');
+            subnet.stop_ip = subnet.broadcast.split('.');
+            subnet.start_ip = subnet.start_ip.map((text) => Number(text));
+            subnet.stop_ip = subnet.stop_ip.map((text) => Number(text));
+            return subnet;
+        }
+        catch (err) {
+            console.log('error', err);
+        }
+        return;
+    });
+
+    console.log(setupConfig.subnets);
+
+    //Websocket Loop
+    WebSockLoop(false);
+
 }
 
 //Ready Event
@@ -256,7 +320,7 @@ conn.on('ready', () => {
     console.log(setupConfig.subnets);
 
     //Websocket Loop
-    WebSockLoop();
+    WebSockLoop(true);
 
     if (globalres) {
         globalres.status('200').json({ status: '200' });
@@ -305,7 +369,12 @@ setup = (req, res) => {
         setupConfig = req.body;
 
         //Create SSH Connection
-        sshConnect(setupConfig, res);
+        if (setupConfig.remote) {
+            sshConnect(setupConfig, res);
+        }
+        else {
+            localConnect(setupConfig, res);
+        }
     }
     else {
         return res.status('200').json({ status: '200' });

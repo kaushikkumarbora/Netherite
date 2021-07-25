@@ -1,10 +1,10 @@
 .container-setup {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     gap: 3px 3px;
     grid-auto-flow: row;
-    grid-template-areas: "pl_user" "user" "pl_server" "server" "pl_password" "password" "pl_target" "target" "buttons";
+    grid-template-areas: "pl_user" "user" "pl_server" "server" "pl_password" "password" "pl_target" "target" "div_scope" "buttons";
 }
 
 .pl_user {
@@ -37,6 +37,17 @@
 
 .target {
     grid-area: target;
+}
+
+.div_scope {
+    grid-area: div_scope;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+    gap: 3px;
 }
 
 .buttons {
