@@ -3,6 +3,8 @@
 </div>
 <h3 align="center">Discover Your Network</h3>
 <br>
+### Problem Statement
+In an increasingly mobile world, asset monitoring is an important activity. In cases such as asset loss or even otherwise, appropriate asset monitoring is crucial in ensuring information security at all times. As part of this challenge, teams are expected to build a tool that will be able to monitor assets and be able to tell users all key information pertaining to the same.
 
 ## Installation
 
@@ -10,22 +12,22 @@ Use the package manager [npm](https://nodejs.org/en/download/) to install depend
 
 ### Download Repository
 ```bash
-git clone https://github.com/kaushikkumarbora/D2C_Asset_Mon.git
+git clone https://github.com/kaushikkumarbora/Netherite.git
 ```
 ### Install Dependencies
 #### Client (Frontend)
 ```bash
-cd .\D2C_Asset_Mon\client
+cd .\Netherite\client
 npm i
 ```
 #### Server (Backend - Node.js)
 ```bash
-cd .\D2C_Asset_Mon\server-js
+cd .\Netherite\server-js
 npm i
 ```
 #### Server (Backend - Python) - Optional
 ```bash
-cd .\D2C_Asset_Mon\server-python
+cd .\Netherite\server-python
 pip install requirements.txt
 ```
 #### Install PostgreSQL
@@ -89,10 +91,12 @@ cd .\server-js
 npm start
 ```
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+### Authors
 
-Please make sure to update tests as appropriate.
+##### [Kaushik Kumar Bora](https://github.com/kaushikkumarbora)
+##### [Rabijit Singh](https://github.com/rabijitsingh)
+##### [Subhasish Goswami](https://github.com/subhasishgoswami)
+
 
 ## Credits
 > Discord-
