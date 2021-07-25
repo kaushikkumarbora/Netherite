@@ -1,6 +1,8 @@
-# D2C Asset Monitoring
-
-Proof of Concept for Asset Monitoring tool.
+<div align="center" class="row">
+  <img src="https://i.imgur.com/94ryGD9.png" width="200"/>
+</div>
+<h3 align="center">Discover Your Network</h3>
+<br>
 
 ## Installation
 
