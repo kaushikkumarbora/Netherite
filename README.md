@@ -92,6 +92,16 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please make sure to update tests as appropriate.
 
+### Branches
+#### main
+> Main branch. May not be the updated branch
+#### server-python
+> Implement backend with Flask API
+#### panic
+> Windows AD Querying for information such as OS,OS version, Hostname, Canonical Name ... (Require a shell from AD as administrator)
+#### Panic-js
+> Dumping Host Discovery into a single table database (Bad Practice). Used for testing.
+
 ## Credits
 > Discord-
 > 1. *radwolfsdragon#5966* - Helped understand the problem statement and a life-saver.
