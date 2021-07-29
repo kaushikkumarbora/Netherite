@@ -92,10 +92,13 @@ After you have done the first time setup, you can run the application directly f
 cd .\server-js
 npm start
 ```
+## Video
+### Ping Sweep
+https://user-images.githubusercontent.com/16841301/127455078-9eb855ca-dd1f-4ea0-9b62-999dd53a78be.mp4
+### DC Query
 ## Screenshots
-<div align="center">
-<img src="https://i.imgur.com/xdFROEn.png" width="440" align="center"/>
-</div>
+![Frontend](https://user-images.githubusercontent.com/16841301/127456189-fd372cc7-0ab5-4204-b601-7f360fec59fd.png)
+
 
 ## Authors
 
