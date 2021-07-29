@@ -95,7 +95,10 @@ npm start
 ## Video
 ### Ping Sweep
 https://user-images.githubusercontent.com/16841301/127455078-9eb855ca-dd1f-4ea0-9b62-999dd53a78be.mp4
+
 ### DC Query
+https://user-images.githubusercontent.com/16841301/127546195-9a937f1b-d0b6-4e88-aa93-e3ddeeb5fecf.mp4
+
 ## Screenshots
 ![Frontend](https://user-images.githubusercontent.com/16841301/127456189-fd372cc7-0ab5-4204-b601-7f360fec59fd.png)
 
